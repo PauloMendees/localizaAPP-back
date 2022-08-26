@@ -60,7 +60,7 @@ model Item {
 model Empresa {
   id    String  @id @default(uuid())
   name  String
-  users User[]
+  users User[]  @relation()
   items Item[]
 
   @@map("empresa")

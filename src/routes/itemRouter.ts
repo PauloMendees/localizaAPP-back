@@ -1,28 +1,34 @@
-import { Router } from "express";
-import { DeleteController } from "../controllers/itemController/deleteController";
-import { GetAllItemsController } from "../controllers/itemController/getAllController";
-import { GetItemByIdController } from "../controllers/itemController/getByIdController";
-import { PhotoController } from "../controllers/itemController/photoAddController";
-import { PostController } from "../controllers/itemController/postController";
-import { PutController } from "../controllers/itemController/putController";
+import { Response, Router, Request } from "express";
+import { addImageController } from "../controllers/item/addImage";
+import { deleteController } from "../controllers/item/delete";
+import { getAllController } from "../controllers/item/getAll";
+import { getByIdController } from "../controllers/item/getById";
+import { postController } from "../controllers/item/post";
+import { putController } from "../controllers/item/put";
 import { ensureAuthenticated } from "../middlewares/ensureAuthenticate";
 
 const itemRoute = Router()
 
-const getAllItems = new GetAllItemsController()
-const getItemById = new GetItemByIdController()
-const deleteItem = new DeleteController()
-const postItem = new PostController()
-const putItem = new PutController()
-const photoController = new PhotoController()
+itemRoute.get("/api/item/getall", ensureAuthenticated, (req: Request, res: Response) => {
+    return getAllController.handle(req, res);
+})
+itemRoute.get("/api/item/getById/:id", ensureAuthenticated, (req: Request, res: Response) => {
+    return getByIdController.handle(req, res);
+})
 
-itemRoute.get("/api/item/getall", ensureAuthenticated, getAllItems.handle)
-itemRoute.get("/api/item/getById/:id", ensureAuthenticated, getItemById.handle)
+itemRoute.delete("/api/item/delete/:id", ensureAuthenticated, (req: Request, res: Response) => {
+    return deleteController.handle(req, res);
+})
 
-itemRoute.delete("/api/item/delete/:id", ensureAuthenticated, deleteItem.handle)
+itemRoute.post("/api/item/post", ensureAuthenticated, (req: Request, res: Response) => {
+    return postController.handle(req, res);
+})
 
-itemRoute.post("/api/item/post", ensureAuthenticated, postItem.handle)
+itemRoute.put("/api/item/put/:id", ensureAuthenticated, (req: Request, res: Response) => {
+    return putController.handle(req, res);
+})
+itemRoute.put("/api/item/addPhoto/:id", ensureAuthenticated, (req: Request, res: Response) => {
+    return addImageController.handle(req, res);
+})
 
-itemRoute.put("/api/item/put/:id", ensureAuthenticated, putItem.handle)
-itemRoute.put("/api/item/addPhoto/:id", ensureAuthenticated, photoController.handle)
 export { itemRoute }

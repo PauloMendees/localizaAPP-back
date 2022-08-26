@@ -1,4 +1,3 @@
-import { onStart } from "./onStart"
 import { chargeDataBaseRouter } from "./routes/chargeDataBaseRouter"
 import { empresaRouter } from "./routes/empresaRouter"
 import { itemRoute } from "./routes/itemRouter"
@@ -14,11 +13,8 @@ const app = express()
 app.use(cors())
 app.options('*', cors())
 
-
 //Converting response and payload to json
 app.use(express.json())
-
-onStart()
 
 //Adding routes
 app.use(userRoute)

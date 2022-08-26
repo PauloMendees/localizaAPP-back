@@ -1,45 +1,53 @@
 //Create route's to make the API work's online
-import { Router } from "express";
-import { DeleteUser } from "../controllers/userController/deleteController";
-import { GetAllUsers } from "../controllers/userController/getAllController";
-import { GetUserById } from "../controllers/userController/getByIdController";
-import { UserLogin } from "../controllers/userController/loginController";
-import { PostUser } from "../controllers/userController/postController";
-import { PutUser } from "../controllers/userController/putController";
-import { RegisterNewUser } from "../controllers/userController/registerController";
-import { ResetPassword } from "../controllers/userController/resetPasswordController";
-import { VinculateUser } from "../controllers/userController/vinculateController";
-import { ensureAuthenticated } from "../middlewares/ensureAuthenticate";
+import { Router, Response, Request } from "express";
+import { deleteController } from "../controllers/user/delete";
+import { getAllController } from "../controllers/user/getAll";
+import { UserLogin } from "../controllers/user/loginController";
+import { registerController } from "../controllers/user/register";
+import { resetPasswordController } from "../controllers/user/resetPassword";
+import { vinculateController } from "../controllers/user/vinculate";
+import { adminMiddleware } from "../middlewares/adminMiddleware";
 import { registerUserAuthenticate } from "../middlewares/registerUserAuthenticate";
 import { ResetPasswordAuthenticate } from "../middlewares/resetPasswordAuthenticate";
 
 const userRoute = Router()
-
-const postUser = new PostUser()
-const getAllUsers = new GetAllUsers()
-const deleteUser = new DeleteUser()
-const putUser = new PutUser()
-const getUserById = new GetUserById()
-const resetPassword = new ResetPassword()
 const userLogin = new UserLogin()
-const registerUser = new RegisterNewUser()
-const vinculate = new VinculateUser()
 
-userRoute.get('/api/user/getall', ensureAuthenticated, getAllUsers.handle)
-userRoute.get('/api/user/getById/:id', ensureAuthenticated, getUserById.handle)
+userRoute.get('/api/user/getall', adminMiddleware, (req: Request, res: Response) => {
+    return getAllController.handle(req, res);
+})
 
-userRoute.delete('/api/user/delete/:id', ensureAuthenticated, deleteUser.handle)
+userRoute.delete('/api/user/delete/:id', adminMiddleware, (req: Request, res: Response) => {
+    return deleteController.handle(req, res);
+})
 
-userRoute.put('/api/user/put/:id', ensureAuthenticated, putUser.handle)
-userRoute.put('/api/user/changePassword', ResetPasswordAuthenticate, resetPassword.changePassword)
-userRoute.put('/api/user/vinculate/id', vinculate.handle)
+userRoute.put('/api/user/changePassword', ResetPasswordAuthenticate, (req: Request, res: Response) => {
+    resetPasswordController.changePassword(req, res);
+})
+userRoute.put('/api/user/vinculate/:id', adminMiddleware, (req: Request, res: Response) => {
+    return vinculateController.handle(req, res);
+})
 
-userRoute.post('/api/user/post', ensureAuthenticated, postUser.handle)
 userRoute.post('/api/user/login', userLogin.handle)
-userRoute.post('/api/user/initResetPassword', resetPassword.initRequest)
-userRoute.post('/api/user/verifyResetCode', resetPassword.codeVerify)
-userRoute.post('/api/user/startRegister', registerUser.sendCode)
-userRoute.post('/api/user/registerCodeVerify', registerUser.codeVerify)
-userRoute.post('/api/user/register', registerUserAuthenticate, registerUser.create)
+
+userRoute.post('/api/user/initResetPassword', (req: Request, res: Response) => {
+    return resetPasswordController.initRequest(req, res)
+})
+
+userRoute.post('/api/user/verifyResetCode', (req: Request, res: Response) => {
+    return resetPasswordController.codeVerify(req, res)
+})
+
+userRoute.post('/api/user/startRegister', (req: Request, res: Response) => {
+    return registerController.sendCode(req, res)
+})
+
+userRoute.post('/api/user/registerCodeVerify', (req: Request, res: Response) => {
+    return registerController.codeVerify(req, res)
+})
+
+userRoute.post('/api/user/register', registerUserAuthenticate, (req: Request, res: Response) => {
+    return registerController.create(req, res)
+})
 
 export { userRoute }
