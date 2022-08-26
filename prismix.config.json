@@ -1,0 +1,15 @@
+{
+  "mixers": [
+    {
+        "input": [
+            "base.prisma",
+            "./src/entities/user.prisma",
+            "./src/entities/resetPasswordCode.prisma",
+            "./src/entities/registerUserCode.prisma",
+            "./src/entities/item.prisma",
+            "./src/entities/empresa.prisma"
+        ],
+        "output": "prisma/schema.prisma"
+    }
+  ]
+}
